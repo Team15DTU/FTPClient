@@ -1,10 +1,7 @@
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-public class ftpComs implements Runnable {
+public class FTPComs implements Runnable {
 	
 	//region Fields
 	
@@ -15,7 +12,7 @@ public class ftpComs implements Runnable {
 	
 	//region Constructor
 	
-	public ftpComs(String ip)
+	public FTPComs(String ip)
 	{ this.ip = ip; }
 	
 	//endregion
@@ -28,11 +25,19 @@ public class ftpComs implements Runnable {
 		
 		try (Socket socket = new Socket(ip, comPort))
 		{
+			/////////////////////////////////////////
+			//////////// Create Streams /////////////
+			/////////////////////////////////////////
 			outToServer = new DataOutputStream(socket.getOutputStream());
 			inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			/////////////////////////////////////////
 			
+			System.out.println(inFromServer.readLine());
 			
+			outToServer.close();
+			inFromServer.close();
 		}
+		
 		catch (IOException e)
 		{
 			e.printStackTrace();
