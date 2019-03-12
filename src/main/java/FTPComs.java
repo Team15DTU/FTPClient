@@ -9,7 +9,6 @@ import java.net.UnknownHostException;
 public class FTPComs implements Runnable {
 	
 	//region Fields
-	
 	private final int comPort = 21;
 	private InetAddress ip;
 	
@@ -39,13 +38,39 @@ public class FTPComs implements Runnable {
 			outToServer = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			inFromServer = new BufferedReader( new InputStreamReader(socket.getInputStream()) );
 			/////////////////////////////////////////
-			
-			
-			
+
+            try {
+
+
+                Thread.sleep(200);
+                while(inFromServer.ready()){
+                    String response=inFromServer.readLine();
+                    System.out.println(response);
+                }
+                String Login ="USER";
+                String DirChoice="CWD /u/pkp/";
+                String ShowDir="LIST";
+                outToServer.writeBytes(Login+ "\r\n");
+                outToServer.writeBytes(DirChoice+ "\r\n");
+                outToServer.writeBytes(ShowDir+ "\r\n");
+                outToServer.flush();
+
+                System.out.println();
+
+                Thread.sleep(400);
+                while(inFromServer.ready()){
+                    String response=inFromServer.readLine();
+                    System.out.println(response);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
 			outToServer.close();
 			inFromServer.close();
 		}
-		
+
 		catch (IOException e)
 		{
 			e.printStackTrace();
