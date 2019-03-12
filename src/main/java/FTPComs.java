@@ -1,3 +1,5 @@
+import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -26,7 +28,7 @@ public class FTPComs implements Runnable {
 	@Override
 	public void run()
 	{
-		BufferedWriter outToServer;
+		DataOutputStream outToServer;
 		BufferedReader inFromServer;
 		
 		try (Socket socket = new Socket(ip ,comPort))
@@ -34,16 +36,11 @@ public class FTPComs implements Runnable {
 			/////////////////////////////////////////
 			//////////// Create Streams /////////////
 			/////////////////////////////////////////
-			outToServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			outToServer = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			inFromServer = new BufferedReader( new InputStreamReader(socket.getInputStream()) );
 			/////////////////////////////////////////
-			String s;
-			while ((s = inFromServer.readLine()) != null)
-			{
-				System.out.println(s);
-			}
 			
-			System.out.println("hhe");
+			
 			
 			outToServer.close();
 			inFromServer.close();
