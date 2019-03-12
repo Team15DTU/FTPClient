@@ -15,15 +15,18 @@ public class FTPComs implements Runnable {
 	
 	//region Constructor
 	
-	public FTPComs(String ip) throws UnknownHostException
-	{ this.ip = InetAddress.getByName(ip); }
+	public FTPComs(String hostName) throws UnknownHostException
+	{ this.ip = InetAddress.getByName(hostName); }
+	
+	public FTPComs(InetAddress ip)
+	{ this.ip = ip; }
 	
 	//endregion
 	
 	@Override
 	public void run()
 	{
-		DataOutputStream outToServer;
+		BufferedWriter outToServer;
 		BufferedReader inFromServer;
 		
 		try (Socket socket = new Socket(ip ,comPort))
@@ -31,30 +34,22 @@ public class FTPComs implements Runnable {
 			/////////////////////////////////////////
 			//////////// Create Streams /////////////
 			/////////////////////////////////////////
-			outToServer = new DataOutputStream(socket.getOutputStream());
+			outToServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			/////////////////////////////////////////
+			String s;
+			while ((s = inFromServer.readLine()) != null)
+			{
+				System.out.println(s);
+			}
 			
-			
-			System.out.println("Forbi");
-			
-			outToServer.writeBytes("dir");
-			
-			Thread.sleep(5000);
-			
-			System.out.println("wait done");
-			
-			inFromServer.lines().forEach(System.out::println);
+			System.out.println("hhe");
 			
 			outToServer.close();
 			inFromServer.close();
 		}
 		
 		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
