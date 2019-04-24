@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 
 public class DataConn implements Runnable {
 
-
+    private FTPComs ftpComs = new FTPComs();
     //private final int comDataPort = 20;
     private InetAddress ip;
 
@@ -29,7 +29,8 @@ public class DataConn implements Runnable {
 
         try (Socket serverSocket = makeConn(); //Socket serverSocket = new ServerSocket(comDataPort).accept();
              BufferedReader inFromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
-            System.out.println("Connection established");
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +38,6 @@ public class DataConn implements Runnable {
 
     private Socket makeConn() throws IOException {
 
-        FTPComs ftpComs = new FTPComs();
         String getPort = ftpComs.getDataAddress();
 
         StringTokenizer st = new StringTokenizer(getPort, "(,)");

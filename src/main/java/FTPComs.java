@@ -13,12 +13,11 @@ public class FTPComs implements Runnable {
     private BufferedReader inFromServer;
     //endregion
 
-    public FTPComs() {
-
+    public String getDataAddress() {
+        return dataAddress;
     }
 
     //region Constructor
-
     public FTPComs(String hostName) throws UnknownHostException {
         this.ip = InetAddress.getByName(hostName);
     }
@@ -27,8 +26,8 @@ public class FTPComs implements Runnable {
         this.ip = ip;
     }
 
-    public String getDataAddress() {
-        return dataAddress;
+    public FTPComs() {
+
     }
     //endregion
 
@@ -63,6 +62,10 @@ public class FTPComs implements Runnable {
             }
             */
             Thread.sleep(2000);
+
+            message("NLST");
+
+            Thread.sleep(10000);
             outToServer.close();
             inFromServer.close();
 
