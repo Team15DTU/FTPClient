@@ -49,7 +49,6 @@ public class FTPComs implements Runnable {
 
             //Send setup messages to server
             message("USER");
-            message("CWD /u/pkp/");
             dataAddress = message("PASV");
 
             /*
@@ -61,15 +60,21 @@ public class FTPComs implements Runnable {
                 System.out.println(response);
             }
             */
-            Thread.sleep(2000);
+            //Change selected directory and get a specific file
+            message("CWD /u/pkp/");
+            message("SIZE test.txt");
+            message("RETR test.txt");
 
-            message("NLST");
+            Thread.sleep(5000);
+            System.out.println();
+            message("CWD /pub/");
+            message("SIZE Effective_C++_errata.txt");
+            message("RETR Effective_C++_errata.txt");
 
-            Thread.sleep(10000);
+            Thread.sleep(8000);
+            System.out.println("Server connection is lost now, data connection can still be active");
             outToServer.close();
             inFromServer.close();
-
-            System.out.println("Server connection is lost now, data connection can still be active");
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -77,7 +82,7 @@ public class FTPComs implements Runnable {
     }
 
 
-    private String message(String m) throws IOException, InterruptedException {
+    public String message(String m) throws IOException, InterruptedException {
         outToServer.writeBytes(m + "\r\n");
         outToServer.flush();
         Thread.sleep(400);
