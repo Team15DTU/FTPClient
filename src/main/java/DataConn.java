@@ -14,7 +14,7 @@ public class DataConn implements Runnable {
     private FTPComs ftpComs = new FTPComs();
     //private final int comDataPort = 20;
     private InetAddress ip;
-    private BufferedReader inFromServer;
+    //private BufferedReader inFromServer;
 
     public DataConn(String hostName) throws UnknownHostException {
         this.ip = InetAddress.getByName(hostName);
@@ -26,29 +26,32 @@ public class DataConn implements Runnable {
 
         try {
             Thread.sleep(3000);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-
-        try (Socket serverSocket = makeConn()) //Socket serverSocket = new ServerSocket(comDataPort).accept();
+        try
         {
-            inFromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-
             //Thread.sleep(5000);
             makeFile("test.txt");
-            Thread.sleep(5000);
-            makeFile("Effective_C++_errata.txt");
+
+            Thread.sleep(2000);
+
+            makeFile("README.txt");
+
             System.out.println("Sentence above last sentence");
 
-            inFromServer.close();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void makeFile(String fileName) throws IOException
-    {
+    {   Socket serverSocket = makeConn();
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+        int bytesRead=0;
+
         String path = "..\\FTPClient\\downloaded_files\\"+fileName;
         File file = new File(path);
         System.out.println();
@@ -63,18 +66,23 @@ public class DataConn implements Runnable {
 
         System.out.println("Reading from "+fileName+":");
         if (!inFromServer.ready()){
-            System.out.println("ERROR inFromServer not ready");
+            System.out.println("ERROR inFromServer in DataConn class is not ready");
         }
         while (s != null) {
-        //while (inFromServer.ready()) {
-            System.out.println("Text: "+s);
-            //sb.append(s+"\n");
+            //We only want to print out the first kB of the file
+            bytesRead += (s.getBytes().length);
+            if (bytesRead<1024){
+                System.out.println("Text: "+s);
+            }
+            //The whole file has to be downloaded
             writer.write(s+"\n");
             s = inFromServer.readLine();
         }
         System.out.println();
 
         writer.close();
+        inFromServer.close();
+        serverSocket.close();
     }
 
 

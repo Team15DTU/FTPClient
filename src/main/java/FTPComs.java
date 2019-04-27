@@ -27,7 +27,6 @@ public class FTPComs implements Runnable {
     }
 
     public FTPComs() {
-
     }
     //endregion
 
@@ -51,28 +50,20 @@ public class FTPComs implements Runnable {
             message("USER");
             dataAddress = message("PASV");
 
-            /*
-            //Read all the setup messages from server
-            Thread.sleep(400);
-            String response="";
-            while (inFromServer.ready()) {
-                response = inFromServer.readLine();
-                System.out.println(response);
-            }
-            */
             //Change selected directory and get a specific file
             message("CWD /u/pkp/");
-            message("SIZE test.txt");
+            //message("SIZE test.txt");
             message("RETR test.txt");
 
-            Thread.sleep(5000);
-            System.out.println();
-            message("CWD /pub/");
-            message("SIZE Effective_C++_errata.txt");
-            message("RETR Effective_C++_errata.txt");
+            Thread.sleep(2000);
 
-            Thread.sleep(8000);
-            System.out.println("Server connection is lost now, data connection can still be active");
+            dataAddress = message("PASV");
+            message("CWD /pub/");
+            //message("SIZE README");
+            message("RETR README");
+
+            //Thread.sleep(4000);
+            //System.out.println("Server connection is lost now, data connection can still be active");
             outToServer.close();
             inFromServer.close();
 
