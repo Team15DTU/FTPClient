@@ -1,20 +1,15 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 
 public class DataConn implements Runnable {
 
     private FTPComs ftpComs = new FTPComs();
     //private final int comDataPort = 20;
     private InetAddress ip;
-    //private BufferedReader inFromServer;
+    //private BufferedReader fileFromServer;
 
     public DataConn(String hostName) throws UnknownHostException {
         this.ip = InetAddress.getByName(hostName);
@@ -24,49 +19,69 @@ public class DataConn implements Runnable {
     @Override
     public void run() {
 
-        try {
-            Thread.sleep(3000);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         try
         {
-            //Thread.sleep(5000);
+            Thread.sleep(3000);
             makeFile("test.txt");
 
-            Thread.sleep(2000);
+            Thread.sleep(3000);
 
             makeFile("README.txt");
 
-            System.out.println("Sentence above last sentence");
+            Thread.sleep(3000);
+
+            uploadFile("Upload_test_file.txt");
+
+            //System.out.println("Sentence above exit code 0");
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
+    private void uploadFile(String fileName) throws IOException
+    {
+        Socket serverSocket = makeConn();
+        PrintStream fileToServer = new PrintStream(serverSocket.getOutputStream());
+        String path = "..\\FTPClient\\upload_files\\"+fileName;
+
+        BufferedReader reader = new BufferedReader(new FileReader(path));
+        String s = reader.readLine();
+
+        System.out.println();
+        System.out.println("Uploading "+fileName);
+        while (s != null) {
+            System.out.println("Uploaded text: " + s);
+            fileToServer.println(s);
+
+            s = reader.readLine();
+        }
+
+        reader.close();
+        fileToServer.close();
+        serverSocket.close();
+    }
 
     private void makeFile(String fileName) throws IOException
-    {   Socket serverSocket = makeConn();
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+    {
+        Socket serverSocket = makeConn();
+        BufferedReader fileFromServer = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
         int bytesRead=0;
 
         String path = "..\\FTPClient\\downloaded_files\\"+fileName;
+
         File file = new File(path);
         System.out.println();
         if(file.createNewFile()){
             System.out.println("File created");
         }else System.out.println("File already exists");
 
-        FileWriter writer = new FileWriter(file);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
-        //StringBuilder sb = new StringBuilder();
-        String s = inFromServer.readLine();
+        String s = fileFromServer.readLine();
 
         System.out.println("Reading from "+fileName+":");
-        if (!inFromServer.ready()){
-            System.out.println("ERROR inFromServer in DataConn class is not ready");
+        if (!fileFromServer.ready()){
+            System.out.println("ERROR fileFromServer in DataConn class is not ready");
         }
         while (s != null) {
             //We only want to print out the first kB of the file
@@ -76,12 +91,12 @@ public class DataConn implements Runnable {
             }
             //The whole file has to be downloaded
             writer.write(s+"\n");
-            s = inFromServer.readLine();
+            s = fileFromServer.readLine();
         }
         System.out.println();
 
         writer.close();
-        inFromServer.close();
+        fileFromServer.close();
         serverSocket.close();
     }
 

@@ -57,13 +57,21 @@ public class FTPComs implements Runnable {
 
             Thread.sleep(2000);
 
+            //We have to enter passive mode again since the server closes the data connection
+            // after each file transfer and uses a new port.
             dataAddress = message("PASV");
             message("CWD /pub/");
             //message("SIZE README");
             message("RETR README");
 
-            //Thread.sleep(4000);
-            //System.out.println("Server connection is lost now, data connection can still be active");
+            Thread.sleep(2000);
+
+            dataAddress = message("PASV");
+            message("CWD /incoming/");
+            //message("SIZE README");
+            message("STOR Upload_test_file.txt");
+
+
             outToServer.close();
             inFromServer.close();
 
