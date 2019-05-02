@@ -59,7 +59,7 @@ public class Main {
         }
     }
 
-    public static String message(String m) throws IOException, InterruptedException {
+    private static String message(String m) throws IOException, InterruptedException {
         outToServer1.writeBytes(m + "\r\n");
         outToServer1.flush();
         Thread.sleep(200);
